@@ -20,7 +20,7 @@ const Home = () => {
   const [rowperpage, setrowperpage] = useState(5);
   const [currentpage, setcurrentpage] = useState(0);
   const [search, setSearch] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageBase64, setImageBase64] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const [formData, setFormData] = useState({
@@ -55,18 +55,10 @@ const Home = () => {
   // create car
   const handleSubmit = async () => {
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("brand", formData.brand);
-      data.append("model", formData.model);
-      data.append("fuel", formData.fuel);
-      data.append("price", formData.price);
-      data.append("Publishdate", formData.Publishdate);
-      if (imageFile) data.append("image", imageFile);
-
       await fetch(`${API}/api/cars`, {
         method: "POST",
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, image: imageBase64 }),
       });
       setFormData({
         name: "",
@@ -76,7 +68,7 @@ const Home = () => {
         price: "",
         Publishdate: "",
       });
-      setImageFile(null);
+      setImageBase64("");
       setImagePreview("");
       fetchCars();
     } catch (err) {
@@ -99,18 +91,10 @@ const Home = () => {
 
   const handleUpdate = async (id: string) => {
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("brand", formData.brand);
-      data.append("model", formData.model);
-      data.append("fuel", formData.fuel);
-      data.append("price", formData.price);
-      data.append("Publishdate", formData.Publishdate);
-      if (imageFile) data.append("image", imageFile);
-
       await fetch(`${API}/api/cars/${id}`, {
         method: "PUT",
-        body: data,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, image: imageBase64 }),
       });
       setFormData({
         name: "",
@@ -120,7 +104,7 @@ const Home = () => {
         price: "",
         Publishdate: "",
       });
-      setImageFile(null);
+      setImageBase64("");
       setImagePreview("");
       setEditingId(null);
       fetchCars();
@@ -146,8 +130,13 @@ const Home = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        setImageBase64(base64);
+        setImagePreview(base64);
+      };
+      reader.readAsDataURL(file);
     }
   };
 

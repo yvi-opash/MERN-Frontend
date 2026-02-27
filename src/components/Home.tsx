@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./Home.css";
+const API = import.meta.env.VITE_API_URL;
 
 interface Car {
   _id: string;
@@ -32,7 +33,7 @@ const Home = () => {
 
   const fetchCars = () => {
     fetch(
-      `https://mern-backend-h1lnm3dgr-yashs-projects-f85a8e07.vercel.app/api/cars?page=${currentpage}&limit=${rowperpage}&search=${search}`,
+      `${API}/api/cars?page=${currentpage}&limit=${rowperpage}&search=${search}`,
     )
       .then((res) => res.json())
       .then((data) => {
@@ -51,7 +52,7 @@ const Home = () => {
   // create car
   const handleSubmit = async () => {
     try {
-      await fetch("https://mern-backend-h1lnm3dgr-yashs-projects-f85a8e07.vercel.app/api/cars", {
+      await fetch(`${API}/api/cars`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -74,7 +75,7 @@ const Home = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`https://mern-backend-h1lnm3dgr-yashs-projects-f85a8e07.vercel.app/api/cars/${id}`, { method: "DELETE" });
+      await fetch(`${API}/api/cars/${id}`, { method: "DELETE" });
       fetchCars();
     } catch (err) {
       console.error(err);
@@ -85,7 +86,7 @@ const Home = () => {
 
   const handleUpdate = async (id: string) => {
     try {
-      await fetch(`https://mern-backend-h1lnm3dgr-yashs-projects-f85a8e07.vercel.app/api/cars/${id}`, {
+      await fetch(`${API}/api/cars/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

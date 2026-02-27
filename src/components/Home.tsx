@@ -10,6 +10,7 @@ interface Car {
   fuel: string;
   price: string;
   Publishdate: string;
+  image?: string;
 }
 
 const Home = () => {
@@ -19,6 +20,8 @@ const Home = () => {
   const [rowperpage, setrowperpage] = useState(5);
   const [currentpage, setcurrentpage] = useState(0);
   const [search, setSearch] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -52,10 +55,18 @@ const Home = () => {
   // create car
   const handleSubmit = async () => {
     try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("brand", formData.brand);
+      data.append("model", formData.model);
+      data.append("fuel", formData.fuel);
+      data.append("price", formData.price);
+      data.append("Publishdate", formData.Publishdate);
+      if (imageFile) data.append("image", imageFile);
+
       await fetch(`${API}/api/cars`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: data,
       });
       setFormData({
         name: "",
@@ -64,7 +75,9 @@ const Home = () => {
         fuel: "Diesel",
         price: "",
         Publishdate: "",
-      }); //form ni badhi field ne kori karva
+      });
+      setImageFile(null);
+      setImagePreview("");
       fetchCars();
     } catch (err) {
       console.error(err);
@@ -86,10 +99,18 @@ const Home = () => {
 
   const handleUpdate = async (id: string) => {
     try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("brand", formData.brand);
+      data.append("model", formData.model);
+      data.append("fuel", formData.fuel);
+      data.append("price", formData.price);
+      data.append("Publishdate", formData.Publishdate);
+      if (imageFile) data.append("image", imageFile);
+
       await fetch(`${API}/api/cars/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: data,
       });
       setFormData({
         name: "",
@@ -99,6 +120,8 @@ const Home = () => {
         price: "",
         Publishdate: "",
       });
+      setImageFile(null);
+      setImagePreview("");
       setEditingId(null);
       fetchCars();
     } catch (err) {
@@ -116,7 +139,16 @@ const Home = () => {
       price: car.price,
       Publishdate: car.Publishdate,
     });
+    setImagePreview(car.image || "");
     setEditingId(car._id);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   //pagination
@@ -208,6 +240,14 @@ const Home = () => {
             }
           />
         </div>
+
+        <div className="form-group">
+          <label htmlFor="">Car Image</label>
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+          {imagePreview && (
+            <img src={imagePreview} alt="Preview" className="image-preview" />
+          )}
+        </div>
       </div>
       <div>
         <button
@@ -221,6 +261,7 @@ const Home = () => {
         <table>
           <thead>
             <tr>
+              <th>Image</th>
               <th>Car Name</th>
               <th>Car Brand</th>
               <th>Model</th>
@@ -233,6 +274,11 @@ const Home = () => {
           <tbody>
             {cars.map((car) => (
               <tr key={car._id}>
+                <td>
+                  {car.image && (
+                    <img src={car.image} alt={car.name} className="car-image" />
+                  )}
+                </td>
                 <td>{car.name}</td>
                 <td>{car.brand}</td>
                 <td>{car.model}</td>
@@ -258,7 +304,7 @@ const Home = () => {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={7}>
+              <td colSpan={8}>
                 <span>Rows per page:</span>
                 <input
                   type="number"

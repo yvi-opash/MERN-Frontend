@@ -140,3 +140,18 @@ button:hover {
 .update-btn:hover {
   background-color: #249b00;
 }
+
+.image-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+}
+
+.car-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}

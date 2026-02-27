@@ -24,7 +24,7 @@ const Home = () => {
     name: "",
     brand: "",
     model: "",
-    fuel: "",
+    fuel: "Diesel",
     price: "",
     Publishdate: "",
   });
@@ -61,7 +61,7 @@ const Home = () => {
         name: "",
         brand: "",
         model: "",
-        fuel: "",
+        fuel: "Diesel",
         price: "",
         Publishdate: "",
       }); //form ni badhi field ne kori karva
@@ -95,7 +95,7 @@ const Home = () => {
         name: "",
         brand: "",
         model: "",
-        fuel: "",
+        fuel: "Diesel",
         price: "",
         Publishdate: "",
       });
